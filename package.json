@@ -5,18 +5,35 @@
   "repository": "https://github.com/ftrbnd/on-tour-server.git",
   "author": "Giovanni Salas <46335023+ftrbnd@users.noreply.github.com>",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
-    "dev": "nodemon"
+    "dev": "tsx watch src/index.ts",
+    "db:generate": "drizzle-kit generate:pg",
+    "db:migrate": "tsx ./src/db/migrate.ts"
   },
   "dependencies": {
-    "fastify": "^4.26.2"
+    "@lucia-auth/adapter-drizzle": "^1.0.4",
+    "@neondatabase/serverless": "^0.9.0",
+    "@typescript-eslint/eslint-plugin": "^7.3.0",
+    "@typescript-eslint/parser": "^7.3.0",
+    "arctic": "^1.2.1",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.30.2",
+    "eslint-plugin-drizzle": "^0.2.3",
+    "fastify": "^4.26.2",
+    "lucia": "^3.1.1",
+    "oslo": "^1.1.3",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.11.28",
-    "nodemon": "^3.1.0",
-    "ts-node": "^10.9.2",
+    "drizzle-kit": "^0.20.14",
+    "tsx": "^4.7.1",
     "typescript": "^5.4.2"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }

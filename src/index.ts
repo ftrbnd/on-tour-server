@@ -1,11 +1,13 @@
 import Fastify from 'fastify';
+import { authRoutes } from './routes/auth';
 
 const fastify = Fastify({
   logger: true
 });
 
-fastify.get('/ping', async (request, reply) => {
-  return 'pong\n';
+fastify.register(authRoutes);
+fastify.get('/', (req, reply) => {
+  return reply.send({ hello: 'world' });
 });
 
 const start = async () => {
