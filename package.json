@@ -1,0 +1,22 @@
+{
+  "name": "on-tour-server",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "repository": "https://github.com/ftrbnd/on-tour-server.git",
+  "author": "Giovanni Salas <46335023+ftrbnd@users.noreply.github.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "nodemon"
+  },
+  "dependencies": {
+    "fastify": "^4.26.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.28",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  }
+}
