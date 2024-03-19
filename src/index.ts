@@ -5,7 +5,7 @@ const fastify = Fastify({
   logger: true
 });
 
-fastify.register(authRoutes);
+fastify.register(authRoutes, { prefix: '/api/auth' });
 fastify.get('/', (req, reply) => {
   return reply.send({ hello: 'world' });
 });

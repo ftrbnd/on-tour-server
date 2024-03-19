@@ -16,7 +16,7 @@ export const lucia = new Lucia(adapter, {
   },
   getUserAttributes: (attributes) => {
     return {
-      spotifyId: attributes.spotify_id,
+      spotifyId: attributes.spotifyId,
       displayName: attributes.displayName
     };
   }
@@ -24,7 +24,6 @@ export const lucia = new Lucia(adapter, {
 
 export const spotify = new Spotify(env.SPOTIFY_CLIENT_ID, env.SPOTIFY_CLIENT_SECRET, env.SPOTIFY_REDIRECT_URI);
 
-// IMPORTANT!
 declare module 'lucia' {
   interface Register {
     Lucia: typeof lucia;
@@ -33,6 +32,6 @@ declare module 'lucia' {
 }
 
 interface DatabaseUserAttributes {
-  spotify_id: number;
+  spotifyId: string;
   displayName: string;
 }
