@@ -47,8 +47,6 @@ export const validateRequest: preHandlerHookHandler = async (request: FastifyReq
   } else {
     const { session, user } = await lucia.validateSession(sessionId);
 
-    // TODO: refresh tokens?
-
     request.session = session;
     request.user = user;
   }
@@ -143,6 +141,7 @@ export const validateCallback = async (request: FastifyRequest<{ Querystring: IQ
       .values({
         id: userId,
         spotifyId: spotifyUser.id,
+        avatar: spotifyUser.images[1].url,
         displayName: spotifyUser.display_name
       })
       .returning();

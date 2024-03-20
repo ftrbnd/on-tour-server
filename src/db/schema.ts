@@ -3,6 +3,7 @@ import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 export const users = pgTable('users', {
   id: text('id').primaryKey(),
   spotifyId: text('spotify_id').unique().notNull(),
+  avatar: text('avatar').notNull(),
   displayName: text('display_name')
 });
 
