@@ -33,5 +33,5 @@ declare module 'lucia' {
 
 interface DatabaseUserAttributes {
   spotifyId: string;
-  displayName: string;
+  displayName?: string | null;
 }

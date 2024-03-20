@@ -44,19 +44,14 @@ export const validateRequest: preHandlerHookHandler = async (request: FastifyReq
   if (!sessionId) {
     request.session = null;
     request.user = null;
-    return;
+  } else {
+    const { session, user } = await lucia.validateSession(sessionId);
+
+    // TODO: refresh tokens?
+
+    request.session = session;
+    request.user = user;
   }
-
-  const { session, user } = await lucia.validateSession(sessionId);
-
-  if (session && session.fresh) {
-    reply.header('authorization', session.id);
-  } else if (!session) {
-    reply.header('authorization', null);
-  }
-
-  request.session = session;
-  request.user = user;
 };
 
 export const getCurrentUser = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -67,14 +62,36 @@ export const getCurrentUser = async (request: FastifyRequest, reply: FastifyRepl
   }
 };
 
+interface RefreshTokenRequest {
+  refreshToken: string;
+}
+
+export const refreshTokens = async (request: FastifyRequest<{ Body: RefreshTokenRequest }>, reply: FastifyReply) => {
+  if (!request.session) {
+    return reply.status(401).send({ error: 'Cannot refresh tokens' });
+  }
+
+  try {
+    const refreshToken = request.body.refreshToken;
+
+    const tokens = await spotify.refreshAccessToken(refreshToken);
+
+    reply.send({ ...tokens, sessionToken: request.session.id });
+  } catch (e) {
+    if (e instanceof OAuth2RequestError) {
+      return reply.status(400).send({ error: e });
+    }
+    reply.status(500).send({ error: e });
+  }
+};
+
 export const login = async (request: FastifyRequest, reply: FastifyReply) => {
   if (request.session) {
-    reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${request.session.id}`);
-    return;
+    return reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${request.session.id}`);
   }
 
   const state = generateState();
-  const url = await spotify.createAuthorizationURL(state);
+  const url = await spotify.createAuthorizationURL(state, { scopes: ['user-follow-read', 'user-top-read', 'playlist-modify-public', 'playlist-modify-private'] });
 
   reply
     .header(
@@ -96,8 +113,7 @@ export const validateCallback = async (request: FastifyRequest<{ Querystring: IQ
   const storedState = parseCookies(request.headers.cookie ?? '').get('spotify_oauth_state') ?? null;
 
   if (!code || !state || !storedState || state !== storedState) {
-    reply.status(400).send({ error: 'Missing or expired code' });
-    return;
+    return reply.status(400).send({ error: 'Missing or expired code' });
   }
 
   try {
@@ -107,7 +123,7 @@ export const validateCallback = async (request: FastifyRequest<{ Querystring: IQ
         Authorization: `Bearer ${tokens.accessToken}`
       }
     });
-    if (!spotifyUserResponse.ok) throw Error('Failed to get current user');
+    if (!spotifyUserResponse.ok) throw new Error('Failed to get user details from Spotify');
 
     const spotifyUser: SpotifyUser = await spotifyUserResponse.json();
     const existingUser = await db.select().from(users).where(eq(users.spotifyId, spotifyUser.id));
@@ -116,40 +132,41 @@ export const validateCallback = async (request: FastifyRequest<{ Querystring: IQ
       const session = await lucia.createSession(existingUser[0].id, {});
 
       request.session = session;
-      request.user = existingUser[0] as User;
+      request.user = existingUser[0];
 
-      reply.header('authorization', session.id).redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}&access_token=${tokens.accessToken}`);
-      return;
+      return reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}&access_token=${tokens.accessToken}&refresh_token=${tokens.refreshToken}`);
     }
 
     const userId = generateId(15);
-    await db.insert(users).values({
-      id: userId,
-      spotifyId: spotifyUser.id,
-      displayName: spotifyUser.display_name
-    });
+    const newUser = await db
+      .insert(users)
+      .values({
+        id: userId,
+        spotifyId: spotifyUser.id,
+        displayName: spotifyUser.display_name
+      })
+      .returning();
 
     const session = await lucia.createSession(userId, {});
 
     request.session = session;
-    request.user = existingUser[0] as User;
+    request.user = newUser[0];
 
-    reply.header('authorization', session.id).redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}&access_token=${tokens.accessToken}`);
+    reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}&access_token=${tokens.accessToken}&refresh_token=${tokens.refreshToken}`);
   } catch (e) {
     if (e instanceof OAuth2RequestError) {
-      reply.status(400).send(e);
+      reply.status(400).send({ error: e });
     }
-    reply.status(500).send(e);
+    reply.status(500).send({ error: e });
   }
 };
 
 export const logout = async (request: FastifyRequest, reply: FastifyReply) => {
   if (!request.session) {
-    reply.status(401).send({ message: 'Cannot log out' });
-    return;
+    return reply.status(401).send({ error: 'Cannot log out' });
   }
 
   await lucia.invalidateSession(request.session.id);
 
-  reply.header('authorization', null).status(204);
+  reply.status(204);
 };
