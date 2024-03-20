@@ -125,7 +125,8 @@ export const validateCallback = async (request: FastifyRequest<{ Querystring: IQ
     const userId = generateId(15);
     await db.insert(users).values({
       id: userId,
-      spotifyId: spotifyUser.id
+      spotifyId: spotifyUser.id,
+      displayName: spotifyUser.display_name
     });
 
     const session = await lucia.createSession(userId, {});
