@@ -1,8 +1,9 @@
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { createInsertSchema, createSelectSchema, jsonSchema } from 'drizzle-zod';
+import { z } from 'zod';
 
 export const users = pgTable('users', {
   id: text('id').primaryKey(),
-  spotifyId: text('spotify_id').unique().notNull(),
   displayName: text('display_name'),
   avatar: text('avatar')
 });
@@ -15,7 +16,23 @@ export const sessions = pgTable('sessions', {
   expiresAt: timestamp('expires_at', {
     withTimezone: true,
     mode: 'date'
-  }).notNull(),
-  accessToken: text('access_token').notNull(),
-  refreshToken: text('refresh_token').notNull()
+  }).notNull()
 });
+
+export const accounts = pgTable('accounts', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+  provider: text('provider').notNull(),
+  providerId: text('provider_id').notNull(),
+  accessToken: text('access_token').notNull(),
+  refreshToken: text('refresh_token').notNull(),
+  accessTokenExpiresAt: timestamp('access_token_expires_at', {
+    withTimezone: true,
+    mode: 'date'
+  }).notNull()
+});
+
+export const selectAccountSchema = createSelectSchema(accounts);
+export type Account = z.infer<typeof selectAccountSchema>;

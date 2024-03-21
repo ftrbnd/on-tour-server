@@ -4,6 +4,7 @@ import { getCurrentUser, login, logout, validateCallback, validateRequest } from
 export const authRoutes = async function (fastify: FastifyInstance) {
   fastify.decorateRequest('session', null);
   fastify.decorateRequest('user', null);
+  fastify.decorate('account', null);
 
   fastify.addHook('preHandler', validateRequest);
 

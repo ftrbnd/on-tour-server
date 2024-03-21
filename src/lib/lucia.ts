@@ -16,15 +16,8 @@ export const lucia = new Lucia(adapter, {
   },
   getUserAttributes: (attributes) => {
     return {
-      spotifyId: attributes.spotifyId,
       displayName: attributes.displayName,
       avatar: attributes.avatar
-    };
-  },
-  getSessionAttributes: (attributes) => {
-    return {
-      accessToken: attributes.accessToken,
-      refreshToken: attributes.refreshToken
     };
   }
 });
@@ -35,17 +28,10 @@ declare module 'lucia' {
   interface Register {
     Lucia: typeof lucia;
     DatabaseUserAttributes: DatabaseUserAttributes;
-    DatabaseSessionAttributes: DatabaseSessionAttributes;
   }
 }
 
 interface DatabaseUserAttributes {
-  spotifyId: string;
   displayName?: string | null;
   avatar?: string | null;
-}
-
-interface DatabaseSessionAttributes {
-  accessToken: string;
-  refreshToken: string;
 }
