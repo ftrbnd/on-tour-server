@@ -20,3 +20,6 @@ const start = async () => {
 };
 
 start();
+
+// TODO: set up cron job to delete expired sessions
+// await lucia.deleteExpiredSessions();

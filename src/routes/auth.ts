@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { getCurrentUser, login, logout, refreshTokens, validateCallback, validateRequest } from '../controllers/auth';
+import { getCurrentUser, login, logout, validateCallback, validateRequest } from '../controllers/auth';
 
 export const authRoutes = async function (fastify: FastifyInstance) {
   fastify.decorateRequest('session', null);
@@ -8,8 +8,6 @@ export const authRoutes = async function (fastify: FastifyInstance) {
   fastify.addHook('preHandler', validateRequest);
 
   fastify.get('/me', getCurrentUser);
-
-  fastify.post('/refresh', refreshTokens);
 
   fastify.get('/login/spotify', login);
 

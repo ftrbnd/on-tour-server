@@ -37,7 +37,7 @@ declare module 'fastify' {
   }
 }
 
-export const validateRequest: preHandlerHookHandler = async (request: FastifyRequest, reply: FastifyReply) => {
+export const validateRequest: preHandlerHookHandler = async (request: FastifyRequest) => {
   const authHeader = request.headers.authorization;
   const sessionId = lucia.readBearerToken(authHeader ?? '');
 
@@ -45,7 +45,16 @@ export const validateRequest: preHandlerHookHandler = async (request: FastifyReq
     request.session = null;
     request.user = null;
   } else {
-    const { session, user } = await lucia.validateSession(sessionId);
+    let { session, user } = await lucia.validateSession(sessionId);
+
+    if (session) {
+      const tokens = await spotify.refreshAccessToken(session.refreshToken);
+      session = {
+        ...session,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken
+      };
+    }
 
     request.session = session;
     request.user = user;
@@ -54,38 +63,15 @@ export const validateRequest: preHandlerHookHandler = async (request: FastifyReq
 
 export const getCurrentUser = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
-    reply.send({ user: request.user });
+    reply.send({ session: request.session, user: request.user });
   } catch (e) {
-    reply.status(500).send({ error: e });
-  }
-};
-
-interface RefreshTokenRequest {
-  refreshToken: string;
-}
-
-export const refreshTokens = async (request: FastifyRequest<{ Body: RefreshTokenRequest }>, reply: FastifyReply) => {
-  if (!request.session) {
-    return reply.status(401).send({ error: 'Cannot refresh tokens' });
-  }
-
-  try {
-    const refreshToken = request.body.refreshToken;
-
-    const tokens = await spotify.refreshAccessToken(refreshToken);
-
-    reply.send({ ...tokens, sessionToken: request.session.id });
-  } catch (e) {
-    if (e instanceof OAuth2RequestError) {
-      return reply.status(400).send({ error: e });
-    }
     reply.status(500).send({ error: e });
   }
 };
 
 export const login = async (request: FastifyRequest, reply: FastifyReply) => {
   if (request.session) {
-    return reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${request.session.id}`);
+    return reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${request.session.id}&access_token=${request.session.accessToken}`);
   }
 
   const state = generateState();
@@ -127,12 +113,15 @@ export const validateCallback = async (request: FastifyRequest<{ Querystring: IQ
     const existingUser = await db.select().from(users).where(eq(users.spotifyId, spotifyUser.id));
 
     if (existingUser[0]) {
-      const session = await lucia.createSession(existingUser[0].id, {});
+      const session = await lucia.createSession(existingUser[0].id, {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken
+      });
 
       request.session = session;
       request.user = existingUser[0];
 
-      return reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}&access_token=${tokens.accessToken}&refresh_token=${tokens.refreshToken}`);
+      return reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}&access_token=${tokens.accessToken}&access_token=${tokens.accessToken}`);
     }
 
     const userId = generateId(15);
@@ -146,12 +135,15 @@ export const validateCallback = async (request: FastifyRequest<{ Querystring: IQ
       })
       .returning();
 
-    const session = await lucia.createSession(userId, {});
+    const session = await lucia.createSession(userId, {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken
+    });
 
     request.session = session;
     request.user = newUser[0];
 
-    reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}&access_token=${tokens.accessToken}&refresh_token=${tokens.refreshToken}`);
+    reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}&access_token=${tokens.accessToken}&access_token=${tokens.accessToken}`);
   } catch (e) {
     if (e instanceof OAuth2RequestError) {
       reply.status(400).send({ error: e });

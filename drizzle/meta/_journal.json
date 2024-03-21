@@ -15,6 +15,20 @@
       "when": 1710971066268,
       "tag": "0001_stale_the_order",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1711048985374,
+      "tag": "0002_lonely_pete_wisdom",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1711052543321,
+      "tag": "0003_parallel_mongoose",
+      "breakpoints": true
     }
   ]
 }
