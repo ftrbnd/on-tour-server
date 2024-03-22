@@ -1,18 +1,27 @@
 import { FastifyInstance } from 'fastify';
 import { getCurrentUser, login, logout, validateCallback, validateRequest } from '../controllers/auth';
+import { $ref } from '../db/schema';
 
-export const authRoutes = async function (fastify: FastifyInstance) {
-  fastify.decorateRequest('session', null);
-  fastify.decorateRequest('user', null);
-  fastify.decorate('account', null);
+export const authRoutes = async function (server: FastifyInstance) {
+  server.decorateRequest('session', null);
+  server.decorateRequest('user', null);
+  server.decorateRequest('account', null);
 
-  fastify.addHook('preHandler', validateRequest);
+  server.addHook('preHandler', validateRequest);
 
-  fastify.get('/me', getCurrentUser);
+  server.get('/login/spotify', login);
+  server.get('/login/spotify/callback', validateCallback);
+  server.get(
+    '/me',
+    {
+      schema: {
+        response: {
+          200: $ref('getCurrentUserResponseSchema')
+        }
+      }
+    },
+    getCurrentUser
+  );
 
-  fastify.get('/login/spotify', login);
-
-  fastify.get('/login/spotify/callback', validateCallback);
-
-  fastify.post('/logout', logout);
+  server.post('/logout', logout);
 };

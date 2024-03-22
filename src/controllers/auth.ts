@@ -2,24 +2,12 @@ import { OAuth2RequestError, generateState } from 'arctic';
 import { FastifyReply, FastifyRequest, preHandlerHookHandler } from 'fastify';
 import { lucia, spotify } from '../lib/lucia';
 import { parseCookies, serializeCookie } from 'oslo/cookie';
-import { Session, User } from 'lucia';
-import { Account } from '../db/schema';
 import { env } from '../utils/env';
 import { createAccount, createUserFromSpotify, findAccountByProviderId, findAccountByUserId, getSpotifyUser, updateAccountTokensByUserId } from '../services/auth';
-
-// TODO: set up request + reply schemas, to only send user, session token + access token
 
 interface IQuerystring {
   code: string;
   state: string;
-}
-
-declare module 'fastify' {
-  interface FastifyRequest {
-    session: Session | null;
-    user: User | null;
-    account: Account | null;
-  }
 }
 
 export const validateRequest: preHandlerHookHandler = async (request: FastifyRequest) => {
@@ -46,7 +34,7 @@ export const validateRequest: preHandlerHookHandler = async (request: FastifyReq
 
 export const getCurrentUser = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
-    reply.send({
+    reply.status(200).send({
       session: request.session,
       user: request.user,
       account: request.account

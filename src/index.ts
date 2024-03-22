@@ -1,20 +1,33 @@
 import Fastify from 'fastify';
 import { authRoutes } from './routes/auth';
+import { Session, User } from 'lucia';
+import { Account, schemas } from './db/schema';
 
-const fastify = Fastify({
-  logger: true
-});
+declare module 'fastify' {
+  interface FastifyRequest {
+    session: Session | null;
+    user: User | null;
+    account: Account | null;
+  }
+}
 
-fastify.register(authRoutes, { prefix: '/api/auth' });
-fastify.get('/', (req, reply) => {
-  return reply.send({ hello: 'world' });
+const server = Fastify();
+
+for (const schema of schemas) {
+  server.addSchema(schema);
+}
+
+server.register(authRoutes, { prefix: '/api/auth' });
+server.get('/healthcheck', async () => {
+  return { status: 'OK' };
 });
 
 const start = async () => {
   try {
-    await fastify.listen({ port: 3000 });
+    const address = await server.listen({ port: 3000 });
+    console.log(`Server listening on ${address}`);
   } catch (err) {
-    fastify.log.error(err);
+    server.log.error(err);
     process.exit(1);
   }
 };
