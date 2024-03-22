@@ -1,6 +1,5 @@
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 import { createSelectSchema } from 'drizzle-zod';
-import { buildJsonSchemas } from 'fastify-zod';
 import { z } from 'zod';
 
 export const users = pgTable('users', {
@@ -37,21 +36,3 @@ export const accounts = pgTable('accounts', {
 
 export const selectAccountSchema = createSelectSchema(accounts);
 export type Account = z.infer<typeof selectAccountSchema>;
-
-const getCurrentUserResponseSchema = z.object({
-  session: z.object({
-    id: z.string()
-  }),
-  user: z.object({
-    displayName: z.string(),
-    avatar: z.string()
-  }),
-  account: z.object({
-    accessToken: z.string(),
-    providerId: z.string()
-  })
-});
-
-export const { schemas, $ref } = buildJsonSchemas({
-  getCurrentUserResponseSchema
-});

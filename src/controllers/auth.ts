@@ -32,25 +32,15 @@ export const validateRequest: preHandlerHookHandler = async (request: FastifyReq
   } // else, request decorators are null by default
 };
 
-export const getCurrentUser = async (request: FastifyRequest, reply: FastifyReply) => {
-  try {
-    reply.status(200).send({
-      session: request.session,
-      user: request.user,
-      account: request.account
-    });
-  } catch (e) {
-    reply.status(500).send({ error: e });
-  }
-};
-
 export const login = async (request: FastifyRequest, reply: FastifyReply) => {
   if (request.session && request.account) {
     return reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${request.session.id}&access_token=${request.account.accessToken}`);
   }
 
   const state = generateState();
-  const url = await spotify.createAuthorizationURL(state, { scopes: ['user-follow-read', 'user-top-read', 'playlist-modify-public', 'playlist-modify-private'] });
+  const url = await spotify.createAuthorizationURL(state, {
+    scopes: ['user-follow-read', 'user-top-read', 'playlist-modify-public', 'playlist-modify-private']
+  });
 
   reply
     .header(
@@ -96,6 +86,18 @@ export const validateCallback = async (request: FastifyRequest<{ Querystring: IQ
     if (e instanceof OAuth2RequestError) {
       reply.status(400).send({ error: e });
     }
+    reply.status(500).send({ error: e });
+  }
+};
+
+export const getCurrentUser = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    reply.status(200).send({
+      session: request.session,
+      user: request.user,
+      account: request.account
+    });
+  } catch (e) {
     reply.status(500).send({ error: e });
   }
 };

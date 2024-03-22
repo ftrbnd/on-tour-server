@@ -1,7 +1,8 @@
 import Fastify from 'fastify';
 import { authRoutes } from './routes/auth';
 import { Session, User } from 'lucia';
-import { Account, schemas } from './db/schema';
+import { Account } from './db/schema';
+import { ZodTypeProvider, serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -13,11 +14,12 @@ declare module 'fastify' {
 
 const server = Fastify();
 
-for (const schema of schemas) {
-  server.addSchema(schema);
-}
+server.setValidatorCompiler(validatorCompiler);
+server.setSerializerCompiler(serializerCompiler);
 
-server.register(authRoutes, { prefix: '/api/auth' });
+server.withTypeProvider<ZodTypeProvider>().register(authRoutes, {
+  prefix: '/api/auth'
+});
 server.get('/healthcheck', async () => {
   return { status: 'OK' };
 });

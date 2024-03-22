@@ -1,8 +1,9 @@
-import { FastifyInstance } from 'fastify';
+import { z } from 'zod';
 import { getCurrentUser, login, logout, validateCallback, validateRequest } from '../controllers/auth';
-import { $ref } from '../db/schema';
+import { FastifyPluginAsyncZod } from '@benjaminlindberg/fastify-type-provider-zod';
 
-export const authRoutes = async function (server: FastifyInstance) {
+// TODO: https://github.com/turkerdev/fastify-type-provider-zod/issues/75
+export const authRoutes: FastifyPluginAsyncZod = async function (server) {
   server.decorateRequest('session', null);
   server.decorateRequest('user', null);
   server.decorateRequest('account', null);
@@ -10,18 +11,57 @@ export const authRoutes = async function (server: FastifyInstance) {
   server.addHook('preHandler', validateRequest);
 
   server.get('/login/spotify', login);
-  server.get('/login/spotify/callback', validateCallback);
+  server.get(
+    '/login/spotify/callback',
+    {
+      schema: {
+        querystring: z.object({
+          code: z.string(),
+          state: z.string()
+        }),
+        headers: z.object({
+          cookie: z.string()
+        })
+      }
+    },
+    validateCallback
+  );
   server.get(
     '/me',
     {
       schema: {
         response: {
-          200: $ref('getCurrentUserResponseSchema')
-        }
+          200: z.object({
+            session: z.object({
+              id: z.string()
+            }),
+            user: z.object({
+              displayName: z.string(),
+              avatar: z.string()
+            }),
+            account: z.object({
+              accessToken: z.string(),
+              providerId: z.string()
+            })
+          })
+        },
+        headers: z.object({
+          authorization: z.string()
+        })
       }
     },
     getCurrentUser
   );
 
-  server.post('/logout', logout);
+  server.post(
+    '/logout',
+    {
+      schema: {
+        headers: z.object({
+          authorization: z.string()
+        })
+      }
+    },
+    logout
+  );
 };
