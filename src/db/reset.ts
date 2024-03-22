@@ -8,8 +8,8 @@ const main = async () => {
     await db.delete(users);
 
     console.log('Reset database');
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    console.error(e);
     process.exit(1);
   }
 };

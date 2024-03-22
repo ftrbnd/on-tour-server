@@ -8,7 +8,9 @@ const envSchema = z.object({
   SPOTIFY_CLIENT_ID: z.string(),
   SPOTIFY_CLIENT_SECRET: z.string(),
   SPOTIFY_REDIRECT_URI: z.string().url(),
-  EXPO_REDIRECT_URL: z.string().url()
+  EXPO_REDIRECT_URL: z.string().url(),
+  DAILY_CRON_HOUR: z.coerce.number(),
+  DAILY_CRON_MINUTE: z.coerce.number()
 });
 
 export const env = envSchema.parse(process.env);
