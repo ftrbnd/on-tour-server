@@ -33,8 +33,8 @@ export const validateRequest: preHandlerHookHandler = async (request: FastifyReq
 };
 
 export const login = async (request: FastifyRequest, reply: FastifyReply) => {
-  if (request.session && request.account) {
-    return reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${request.session.id}&access_token=${request.account.accessToken}`);
+  if (request.session) {
+    return reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${request.session.id}`);
   }
 
   const state = generateState();
@@ -74,14 +74,14 @@ export const validateCallback = async (request: FastifyRequest<{ Querystring: IQ
       await updateAccountTokensByUserId(account.userId, tokens);
       const session = await lucia.createSession(account.userId, {});
 
-      return reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}&access_token=${tokens.accessToken}`);
+      return reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}`);
     }
 
     const newUser = await createUserFromSpotify(spotifyUser);
     await createAccount(newUser.id, spotifyUser.id, tokens);
     const session = await lucia.createSession(newUser.id, {});
 
-    reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}&access_token=${tokens.accessToken}`);
+    reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}`);
   } catch (e) {
     if (e instanceof OAuth2RequestError) {
       reply.status(400).send({ error: e });

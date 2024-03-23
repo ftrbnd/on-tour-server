@@ -7,7 +7,7 @@ const main = async () => {
     await db.delete(accounts);
     await db.delete(users);
 
-    console.log('Reset database');
+    console.log('Successfully reset database');
   } catch (e) {
     console.error(e);
     process.exit(1);
