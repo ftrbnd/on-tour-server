@@ -23,6 +23,7 @@ export const lucia = new Lucia(adapter, {
 });
 
 export const spotify = new Spotify(env.SPOTIFY_CLIENT_ID, env.SPOTIFY_CLIENT_SECRET, env.SPOTIFY_REDIRECT_URI);
+export const scopes = ['user-follow-read', 'user-top-read', 'playlist-modify-public', 'playlist-modify-private', 'ugc-image-upload'];
 
 declare module 'lucia' {
   interface Register {

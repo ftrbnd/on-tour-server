@@ -1,6 +1,6 @@
 import { OAuth2RequestError, generateState } from 'arctic';
 import { FastifyReply, FastifyRequest, preHandlerHookHandler } from 'fastify';
-import { lucia, spotify } from '../lib/lucia';
+import { lucia, scopes, spotify } from '../lib/lucia';
 import { parseCookies, serializeCookie } from 'oslo/cookie';
 import { env } from '../utils/env';
 import { createAccount, createUserFromSpotify, findAccountByProviderId, findAccountByUserId, getSpotifyUser, updateAccountTokensByUserId } from '../services/auth';
@@ -39,7 +39,7 @@ export const login = async (request: FastifyRequest, reply: FastifyReply) => {
 
   const state = generateState();
   const url = await spotify.createAuthorizationURL(state, {
-    scopes: ['user-follow-read', 'user-top-read', 'playlist-modify-public', 'playlist-modify-private']
+    scopes
   });
 
   reply
