@@ -34,5 +34,12 @@ export const accounts = pgTable('accounts', {
   }).notNull()
 });
 
+export const playlists = pgTable('playlists', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id)
+});
+
 export const selectAccountSchema = createSelectSchema(accounts);
 export type Account = z.infer<typeof selectAccountSchema>;

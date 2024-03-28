@@ -1,15 +1,9 @@
 import { z } from 'zod';
-import { getCurrentUser, login, logout, validateCallback, validateRequest } from '../controllers/auth';
+import { getCurrentUser, login, logout, validateCallback } from '../controllers/auth';
 import { FastifyPluginAsyncZod } from '@benjaminlindberg/fastify-type-provider-zod';
 
 // TODO: https://github.com/turkerdev/fastify-type-provider-zod/issues/75
 export const authRoutes: FastifyPluginAsyncZod = async function (server) {
-  server.decorateRequest('session', null);
-  server.decorateRequest('user', null);
-  server.decorateRequest('account', null);
-
-  server.addHook('preHandler', validateRequest);
-
   server.get('/login/spotify', login);
   server.get(
     '/login/spotify/callback',
@@ -37,7 +31,8 @@ export const authRoutes: FastifyPluginAsyncZod = async function (server) {
             }),
             user: z.object({
               displayName: z.string(),
-              avatar: z.string()
+              avatar: z.string(),
+              id: z.string()
             }),
             account: z.object({
               accessToken: z.string(),
