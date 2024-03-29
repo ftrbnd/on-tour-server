@@ -1,0 +1,1 @@
+ALTER TABLE "playlists" ADD COLUMN "setlist_id" text NOT NULL;

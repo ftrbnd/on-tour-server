@@ -38,7 +38,9 @@ export const playlists = pgTable('playlists', {
   id: text('id').primaryKey(),
   userId: text('user_id')
     .notNull()
-    .references(() => users.id)
+    .references(() => users.id),
+  setlistId: text('setlist_id').notNull(),
+  title: text('title').notNull()
 });
 
 export const selectAccountSchema = createSelectSchema(accounts);

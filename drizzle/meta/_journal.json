@@ -43,6 +43,27 @@
       "when": 1711582397185,
       "tag": "0005_sour_the_captain",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1711659171611,
+      "tag": "0006_sloppy_power_pack",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1711660388257,
+      "tag": "0007_aberrant_cerebro",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1711663957479,
+      "tag": "0008_silent_invaders",
+      "breakpoints": true
     }
   ]
 }
