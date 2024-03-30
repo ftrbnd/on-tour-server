@@ -1,14 +1,9 @@
 import { FastifyPluginAsyncZod } from '@benjaminlindberg/fastify-type-provider-zod';
-import { deletePlaylist, getUser, getUserPlaylists, storePlaylist } from '../controllers/users';
+import { createUpcomingShow, deletePlaylist, getUserUpcomingShows, getUser, getUserPlaylists, createPlaylist } from '../controllers/users';
 import { z } from 'zod';
+import { playlistSelectSchema, upcomingShowInsertSchema, upcomingShowSelectSchema } from '../db/schema';
 
-const playlistResponseSchema = z.object({
-  id: z.string(),
-  userId: z.string(),
-  setlistId: z.string(),
-  title: z.string()
-});
-
+// TODO: create schemas with drizzle-zod
 export const userRoutes: FastifyPluginAsyncZod = async function (server) {
   server.post(
     '/:id/playlists',
@@ -24,7 +19,7 @@ export const userRoutes: FastifyPluginAsyncZod = async function (server) {
         }),
         response: {
           200: z.object({
-            playlist: playlistResponseSchema
+            playlist: playlistSelectSchema
           }),
           401: z.object({
             error: z.string()
@@ -32,7 +27,7 @@ export const userRoutes: FastifyPluginAsyncZod = async function (server) {
         }
       }
     },
-    storePlaylist
+    createPlaylist
   );
   server.get(
     '/:id/playlists',
@@ -43,7 +38,7 @@ export const userRoutes: FastifyPluginAsyncZod = async function (server) {
         }),
         response: {
           200: z.object({
-            playlists: z.array(playlistResponseSchema)
+            playlists: z.array(playlistSelectSchema)
           })
         }
       }
@@ -62,6 +57,36 @@ export const userRoutes: FastifyPluginAsyncZod = async function (server) {
       }
     },
     deletePlaylist
+  );
+
+  server.post(
+    '/:id/upcoming',
+    {
+      schema: {
+        body: z.object({
+          upcomingShow: upcomingShowInsertSchema
+        }),
+        response: {
+          200: z.object({
+            upcomingShow: upcomingShowSelectSchema
+          })
+        }
+      }
+    },
+    createUpcomingShow
+  );
+  server.get(
+    '/:id/upcoming',
+    {
+      schema: {
+        response: {
+          200: z.object({
+            upcomingShows: z.array(upcomingShowSelectSchema)
+          })
+        }
+      }
+    },
+    getUserUpcomingShows
   );
 
   server.get('/:id', getUser);

@@ -1,8 +1,9 @@
 import { eq, and } from 'drizzle-orm';
 import { db } from '../db/drizzle';
-import { playlists, users } from '../db/schema';
+import { NewUpcomingShow, playlists, upcomingShows, users } from '../db/schema';
+import { generateId } from 'lucia';
 
-export const createPlaylist = async (userId: string, playlistId: string, setlistId: string, title: string) => {
+export const insertPlaylist = async (userId: string, playlistId: string, setlistId: string, title: string) => {
   const newPlaylists = await db
     .insert(playlists)
     .values({
@@ -16,13 +17,13 @@ export const createPlaylist = async (userId: string, playlistId: string, setlist
   return newPlaylists[0];
 };
 
-export const getPlaylistsFromUser = async (userId: string) => {
+export const selectUserPlaylists = async (userId: string) => {
   const playlistsFound = await db.select().from(playlists).where(eq(playlists.userId, userId));
 
   return playlistsFound;
 };
 
-export const getPlaylistBySetlist = async (setlistId: string, userId: string) => {
+export const selectPlaylistsBySetlist = async (setlistId: string, userId: string) => {
   const playlistsFound = await db
     .select()
     .from(playlists)
@@ -33,6 +34,31 @@ export const getPlaylistBySetlist = async (setlistId: string, userId: string) =>
 
 export const deletePlaylistFromUser = async (playlistId: string, userId: string) => {
   await db.delete(playlists).where(and(eq(playlists.id, playlistId), eq(playlists.userId, userId)));
+};
+
+export const insertUpcomingShow = async (upcomingShow: NewUpcomingShow) => {
+  const id = generateId(15);
+
+  const newUpcomingShows = await db
+    .insert(upcomingShows)
+    .values({
+      id,
+      userId: upcomingShow.userId,
+      artist: upcomingShow.artist,
+      tour: upcomingShow.tour,
+      venue: upcomingShow.venue,
+      city: upcomingShow.city,
+      date: upcomingShow.date
+    })
+    .returning();
+
+  return newUpcomingShows[0];
+};
+
+export const selectUserUpcomingShows = async (userId: string) => {
+  const upcomingShowsFound = await db.select().from(upcomingShows).where(eq(upcomingShows.userId, userId));
+
+  return upcomingShowsFound;
 };
 
 export const findUserById = async (id: string) => {

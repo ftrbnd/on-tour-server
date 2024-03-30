@@ -1,0 +1,1 @@
+ALTER TABLE "upcoming_shows" ALTER COLUMN "date" SET DATA TYPE date;
