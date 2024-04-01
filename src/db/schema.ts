@@ -64,4 +64,8 @@ export const playlistSelectSchema = createSelectSchema(playlists);
 
 export const upcomingShowInsertSchema = createInsertSchema(upcomingShows).omit({ id: true });
 export type NewUpcomingShow = z.infer<typeof upcomingShowInsertSchema>;
+
 export const upcomingShowSelectSchema = createSelectSchema(upcomingShows);
+
+export const upcomingShowUpdateSchema = createInsertSchema(upcomingShows).partial();
+export type UpdatedUpcomingShow = z.infer<typeof upcomingShowUpdateSchema>;

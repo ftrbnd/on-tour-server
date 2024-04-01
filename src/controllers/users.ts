@@ -1,6 +1,15 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { insertPlaylist, deletePlaylistFromUser, findUserById, selectPlaylistsBySetlist, selectUserPlaylists, selectUserUpcomingShows, insertUpcomingShow } from '../services/users';
-import { NewUpcomingShow } from '../db/schema';
+import {
+  insertPlaylist,
+  deletePlaylistFromUser,
+  selectPlaylistsBySetlist,
+  selectUserPlaylists,
+  selectUserUpcomingShows,
+  insertUpcomingShow,
+  updateUserUpcomingShow,
+  deleteUpcomingShowFromUser
+} from '../services/users';
+import { NewUpcomingShow, UpdatedUpcomingShow } from '../db/schema';
 
 export const createPlaylist = async (request: FastifyRequest<{ Params: { id: string }; Body: { playlistId: string; title: string; setlistId: string } }>, reply: FastifyReply) => {
   if (!request.session) {
@@ -64,14 +73,27 @@ export const getUserUpcomingShows = async (request: FastifyRequest<{ Params: { i
   return reply.status(200).send({ upcomingShows });
 };
 
-export const getUser = async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+export const updateUpcomingShow = async (request: FastifyRequest<{ Params: { id: string; upcomingId: string }; Body: { upcomingShow: UpdatedUpcomingShow } }>, reply: FastifyReply) => {
   if (!request.session) {
     return reply.status(401).send({ error: 'Invalid session' });
   }
 
-  const { id } = request.params;
+  const { id, upcomingId } = request.params;
+  const { upcomingShow } = request.body;
 
-  const user = await findUserById(id);
+  const updatedUpcomingShow = await updateUserUpcomingShow(upcomingId, id, upcomingShow);
 
-  return reply.status(200).send({ user });
+  return reply.status(200).send({ upcomingShow: updatedUpcomingShow });
+};
+
+export const deleteUpcomingShow = async (request: FastifyRequest<{ Params: { id: string; upcomingId: string } }>, reply: FastifyReply) => {
+  if (!request.session) {
+    return reply.status(401).send({ error: 'Invalid session' });
+  }
+
+  const { id, upcomingId } = request.params;
+
+  await deleteUpcomingShowFromUser(upcomingId, id);
+
+  return reply.status(204).send();
 };

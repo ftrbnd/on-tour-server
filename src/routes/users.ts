@@ -1,7 +1,7 @@
 import { FastifyPluginAsyncZod } from '@benjaminlindberg/fastify-type-provider-zod';
-import { createUpcomingShow, deletePlaylist, getUserUpcomingShows, getUser, getUserPlaylists, createPlaylist } from '../controllers/users';
+import { createUpcomingShow, deletePlaylist, getUserUpcomingShows, getUserPlaylists, createPlaylist, updateUpcomingShow, deleteUpcomingShow } from '../controllers/users';
 import { z } from 'zod';
-import { playlistSelectSchema, upcomingShowInsertSchema, upcomingShowSelectSchema } from '../db/schema';
+import { playlistSelectSchema, upcomingShowInsertSchema, upcomingShowSelectSchema, upcomingShowUpdateSchema } from '../db/schema';
 
 // TODO: create schemas with drizzle-zod
 export const userRoutes: FastifyPluginAsyncZod = async function (server) {
@@ -88,6 +88,37 @@ export const userRoutes: FastifyPluginAsyncZod = async function (server) {
     },
     getUserUpcomingShows
   );
-
-  server.get('/:id', getUser);
+  server.patch(
+    '/:id/upcoming/:upcomingId',
+    {
+      schema: {
+        params: z.object({
+          id: z.string(),
+          upcomingId: z.string()
+        }),
+        body: z.object({
+          upcomingShow: upcomingShowUpdateSchema
+        }),
+        response: {
+          200: z.object({
+            upcomingShow: upcomingShowSelectSchema
+          })
+        }
+      }
+    },
+    updateUpcomingShow
+  );
+  server.delete(
+    '/:id/upcoming/:upcomingId',
+    {
+      schema: {
+        params: z.object({
+          id: z.string(),
+          upcomingId: z.string()
+        })
+        // response: 204 No Content
+      }
+    },
+    deleteUpcomingShow
+  );
 };

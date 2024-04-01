@@ -1,6 +1,6 @@
 import { eq, and } from 'drizzle-orm';
 import { db } from '../db/drizzle';
-import { NewUpcomingShow, playlists, upcomingShows, users } from '../db/schema';
+import { NewUpcomingShow, UpdatedUpcomingShow, playlists, upcomingShows, users } from '../db/schema';
 import { generateId } from 'lucia';
 
 export const insertPlaylist = async (userId: string, playlistId: string, setlistId: string, title: string) => {
@@ -36,19 +36,19 @@ export const deletePlaylistFromUser = async (playlistId: string, userId: string)
   await db.delete(playlists).where(and(eq(playlists.id, playlistId), eq(playlists.userId, userId)));
 };
 
-export const insertUpcomingShow = async (upcomingShow: NewUpcomingShow) => {
+export const insertUpcomingShow = async (show: NewUpcomingShow) => {
   const id = generateId(15);
 
   const newUpcomingShows = await db
     .insert(upcomingShows)
     .values({
       id,
-      userId: upcomingShow.userId,
-      artist: upcomingShow.artist,
-      tour: upcomingShow.tour,
-      venue: upcomingShow.venue,
-      city: upcomingShow.city,
-      date: upcomingShow.date
+      userId: show.userId,
+      artist: show.artist,
+      tour: show.tour,
+      venue: show.venue,
+      city: show.city,
+      date: show.date
     })
     .returning();
 
@@ -61,8 +61,16 @@ export const selectUserUpcomingShows = async (userId: string) => {
   return upcomingShowsFound;
 };
 
-export const findUserById = async (id: string) => {
-  const usersFound = await db.select().from(users).limit(1).where(eq(users.id, id));
+export const updateUserUpcomingShow = async (id: string, userId: string, show: UpdatedUpcomingShow) => {
+  const updatedUpcomingShows = await db
+    .update(upcomingShows)
+    .set(show)
+    .where(and(eq(upcomingShows.id, id), eq(upcomingShows.userId, userId)))
+    .returning();
 
-  if (usersFound.length === 1) return usersFound[0];
+  return updatedUpcomingShows[0];
+};
+
+export const deleteUpcomingShowFromUser = async (id: string, userId: string) => {
+  await db.delete(upcomingShows).where(and(eq(upcomingShows.id, id), eq(upcomingShows.userId, userId)));
 };
