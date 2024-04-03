@@ -1,9 +1,8 @@
 import { FastifyPluginAsyncZod } from '@benjaminlindberg/fastify-type-provider-zod';
 import { createUpcomingShow, deletePlaylist, getUserUpcomingShows, getUserPlaylists, createPlaylist, updateUpcomingShow, deleteUpcomingShow } from '../controllers/users';
 import { z } from 'zod';
-import { playlistSelectSchema, upcomingShowInsertSchema, upcomingShowSelectSchema, upcomingShowUpdateSchema } from '../db/schema';
+import { playlistInsertSchema, playlistSelectSchema, upcomingShowInsertSchema, upcomingShowSelectSchema, upcomingShowUpdateSchema } from '../db/schema';
 
-// TODO: create schemas with drizzle-zod
 export const userRoutes: FastifyPluginAsyncZod = async function (server) {
   server.post(
     '/:id/playlists',
@@ -13,9 +12,7 @@ export const userRoutes: FastifyPluginAsyncZod = async function (server) {
           id: z.string()
         }),
         body: z.object({
-          playlistId: z.string(),
-          title: z.string(),
-          setlistId: z.string()
+          playlist: playlistInsertSchema
         }),
         response: {
           200: z.object({
@@ -116,7 +113,6 @@ export const userRoutes: FastifyPluginAsyncZod = async function (server) {
           id: z.string(),
           upcomingId: z.string()
         })
-        // response: 204 No Content
       }
     },
     deleteUpcomingShow

@@ -60,6 +60,8 @@ export const upcomingShows = pgTable('upcoming_shows', {
 export const selectAccountSchema = createSelectSchema(accounts);
 export type Account = z.infer<typeof selectAccountSchema>;
 
+export const playlistInsertSchema = createInsertSchema(playlists);
+export type NewPlaylist = z.infer<typeof playlistInsertSchema>;
 export const playlistSelectSchema = createSelectSchema(playlists);
 
 export const upcomingShowInsertSchema = createInsertSchema(upcomingShows).omit({ id: true });

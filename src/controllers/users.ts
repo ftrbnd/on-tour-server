@@ -9,19 +9,18 @@ import {
   updateUserUpcomingShow,
   deleteUpcomingShowFromUser
 } from '../services/users';
-import { NewUpcomingShow, UpdatedUpcomingShow } from '../db/schema';
+import { NewPlaylist, NewUpcomingShow, UpdatedUpcomingShow } from '../db/schema';
 
-export const createPlaylist = async (request: FastifyRequest<{ Params: { id: string }; Body: { playlistId: string; title: string; setlistId: string } }>, reply: FastifyReply) => {
+export const createPlaylist = async (request: FastifyRequest<{ Params: { id: string }; Body: { playlist: NewPlaylist } }>, reply: FastifyReply) => {
   if (!request.session) {
     return reply.status(401).send({ error: 'Invalid session' });
   }
 
-  const { id } = request.params;
-  const { playlistId, title, setlistId } = request.body;
+  const { playlist } = request.body;
 
-  const playlist = await insertPlaylist(id, playlistId, setlistId, title);
+  const newPlaylist = await insertPlaylist(playlist);
 
-  return reply.status(200).send({ playlist });
+  return reply.status(200).send({ playlist: newPlaylist });
 };
 
 export const getUserPlaylists = async (request: FastifyRequest<{ Params: { id: string }; Querystring: { setlistId: string } }>, reply: FastifyReply) => {

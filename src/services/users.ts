@@ -1,18 +1,10 @@
 import { eq, and } from 'drizzle-orm';
 import { db } from '../db/drizzle';
-import { NewUpcomingShow, UpdatedUpcomingShow, playlists, upcomingShows, users } from '../db/schema';
+import { NewPlaylist, NewUpcomingShow, UpdatedUpcomingShow, playlists, upcomingShows } from '../db/schema';
 import { generateId } from 'lucia';
 
-export const insertPlaylist = async (userId: string, playlistId: string, setlistId: string, title: string) => {
-  const newPlaylists = await db
-    .insert(playlists)
-    .values({
-      id: playlistId,
-      userId: userId,
-      setlistId,
-      title
-    })
-    .returning();
+export const insertPlaylist = async (playlist: NewPlaylist) => {
+  const newPlaylists = await db.insert(playlists).values(playlist).returning();
 
   return newPlaylists[0];
 };
@@ -43,12 +35,7 @@ export const insertUpcomingShow = async (show: NewUpcomingShow) => {
     .insert(upcomingShows)
     .values({
       id,
-      userId: show.userId,
-      artist: show.artist,
-      tour: show.tour,
-      venue: show.venue,
-      city: show.city,
-      date: show.date
+      ...show
     })
     .returning();
 
@@ -56,7 +43,7 @@ export const insertUpcomingShow = async (show: NewUpcomingShow) => {
 };
 
 export const selectUserUpcomingShows = async (userId: string) => {
-  const upcomingShowsFound = await db.select().from(upcomingShows).where(eq(upcomingShows.userId, userId));
+  const upcomingShowsFound = await db.select().from(upcomingShows).orderBy(upcomingShows.date).where(eq(upcomingShows.userId, userId));
 
   return upcomingShowsFound;
 };
