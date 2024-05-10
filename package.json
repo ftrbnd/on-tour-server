@@ -1,6 +1,7 @@
 {
   "name": "on-tour-server",
   "version": "1.0.0",
+  "type": "module",
   "main": "dist/server.js",
   "repository": "https://github.com/ftrbnd/on-tour-server.git",
   "author": "Giovanni Salas <46335023+ftrbnd@users.noreply.github.com>",
@@ -34,8 +35,13 @@
   "devDependencies": {
     "@types/node": "^20.11.28",
     "drizzle-kit": "^0.20.14",
+    "fastify-tsconfig": "^2.0.0",
     "tsx": "^4.7.1",
     "typescript": "^5.4.2"
+  },
+  "exports": {
+    "import": "./dist/server.js",
+    "require": "./dist/server.js"
   },
   "engines": {
     "node": "20.x"

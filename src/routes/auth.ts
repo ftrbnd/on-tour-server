@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { getCurrentUser, login, logout, validateCallback } from '../controllers/auth';
+import { getCurrentUser, login, logout, validateCallback } from '../controllers/auth.js';
 import { FastifyPluginAsyncZod } from '@benjaminlindberg/fastify-type-provider-zod';
 
 // TODO: https://github.com/turkerdev/fastify-type-provider-zod/issues/75

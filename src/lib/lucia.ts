@@ -1,9 +1,9 @@
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
-import { db } from '../db/drizzle';
-import { sessions, users } from '../db/schema';
+import { db } from '../db/drizzle.js';
+import { sessions, users } from '../db/schema.js';
 import { Lucia } from 'lucia';
 import { Spotify } from 'arctic';
-import { env } from '../utils/env';
+import { env } from '../utils/env.js';
 
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
 

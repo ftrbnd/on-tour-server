@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
-import { db } from '../db/drizzle';
-import { accounts, users } from '../db/schema';
+import { db } from '../db/drizzle.js';
+import { accounts, users } from '../db/schema.js';
 import { SpotifyTokens } from 'arctic';
 import { generateId } from 'lucia';
 
@@ -73,7 +73,7 @@ export const getSpotifyUser = async (accessToken: string) => {
   });
   if (!res.ok) throw new Error('Failed to get user details from Spotify');
 
-  const user: SpotifyUser = await res.json();
+  const user: SpotifyUser = (await res.json()) as unknown as SpotifyUser;
   return user;
 };
 

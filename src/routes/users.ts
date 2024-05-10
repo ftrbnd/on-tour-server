@@ -1,7 +1,7 @@
 import { FastifyPluginAsyncZod } from '@benjaminlindberg/fastify-type-provider-zod';
-import { createUpcomingShow, deletePlaylist, getUserUpcomingShows, getUserPlaylists, createPlaylist, updateUpcomingShow, deleteUpcomingShow } from '../controllers/users';
+import { createUpcomingShow, deletePlaylist, getUserUpcomingShows, getUserPlaylists, createPlaylist, updateUpcomingShow, deleteUpcomingShow } from '../controllers/users.js';
 import { z } from 'zod';
-import { playlistInsertSchema, playlistSelectSchema, upcomingShowInsertSchema, upcomingShowSelectSchema, upcomingShowUpdateSchema } from '../db/schema';
+import { playlistInsertSchema, playlistSelectSchema, upcomingShowInsertSchema, upcomingShowSelectSchema, upcomingShowUpdateSchema } from '../db/schema.js';
 
 export const userRoutes: FastifyPluginAsyncZod = async function (server) {
   server.post(

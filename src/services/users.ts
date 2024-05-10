@@ -1,6 +1,6 @@
 import { eq, and } from 'drizzle-orm';
-import { db } from '../db/drizzle';
-import { NewPlaylist, NewUpcomingShow, UpdatedUpcomingShow, playlists, upcomingShows } from '../db/schema';
+import { db } from '../db/drizzle.js';
+import { NewPlaylist, NewUpcomingShow, UpdatedUpcomingShow, playlists, upcomingShows } from '../db/schema.js';
 import { generateId } from 'lucia';
 
 export const insertPlaylist = async (playlist: NewPlaylist) => {

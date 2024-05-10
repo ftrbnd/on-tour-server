@@ -1,6 +1,6 @@
-import { env } from '../utils/env';
+import { env } from '../utils/env.js';
 import { CronJob } from 'cron';
-import { lucia } from './lucia';
+import { lucia } from './lucia.js';
 
 const deleteExpiredSessions = async () => {
   await lucia.deleteExpiredSessions();

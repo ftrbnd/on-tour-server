@@ -1,5 +1,5 @@
-import { db } from './drizzle';
-import { accounts, playlists, sessions, upcomingShows, users } from './schema';
+import { db } from './drizzle.js';
+import { accounts, playlists, sessions, upcomingShows, users } from './schema.js';
 
 const main = async () => {
   try {

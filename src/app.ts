@@ -1,10 +1,10 @@
 import Fastify from 'fastify';
-import { authRoutes } from './routes/auth';
+import { authRoutes } from './routes/auth.js';
 import { Session, User } from 'lucia';
-import { Account } from './db/schema';
+import { Account } from './db/schema.js';
 import { ZodTypeProvider, serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
-import { validateRequest } from './controllers/auth';
-import { userRoutes } from './routes/users';
+import { validateRequest } from './controllers/auth.js';
+import { userRoutes } from './routes/users.js';
 
 declare module 'fastify' {
   interface FastifyRequest {

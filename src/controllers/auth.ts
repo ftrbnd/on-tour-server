@@ -1,9 +1,9 @@
 import { OAuth2RequestError, generateState } from 'arctic';
 import { FastifyReply, FastifyRequest, preHandlerHookHandler } from 'fastify';
-import { lucia, scopes, spotify } from '../lib/lucia';
+import { lucia, scopes, spotify } from '../lib/lucia.js';
 import { parseCookies, serializeCookie } from 'oslo/cookie';
-import { env } from '../utils/env';
-import { createAccount, createUserFromSpotify, findAccountByProviderId, findAccountByUserId, getSpotifyUser, updateAccountTokensByUserId } from '../services/auth';
+import { env } from '../utils/env.js';
+import { createAccount, createUserFromSpotify, findAccountByProviderId, findAccountByUserId, getSpotifyUser, updateAccountTokensByUserId } from '../services/auth.js';
 
 interface IQuerystring {
   code: string;

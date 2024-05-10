@@ -8,8 +8,8 @@ import {
   insertUpcomingShow,
   updateUserUpcomingShow,
   deleteUpcomingShowFromUser
-} from '../services/users';
-import { NewPlaylist, NewUpcomingShow, UpdatedUpcomingShow } from '../db/schema';
+} from '../services/users.js';
+import { NewPlaylist, NewUpcomingShow, UpdatedUpcomingShow } from '../db/schema.js';
 
 export const createPlaylist = async (request: FastifyRequest<{ Params: { id: string }; Body: { playlist: NewPlaylist } }>, reply: FastifyReply) => {
   if (!request.session) {
