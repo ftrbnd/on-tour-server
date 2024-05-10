@@ -5,7 +5,6 @@
   "repository": "https://github.com/ftrbnd/on-tour-server.git",
   "author": "Giovanni Salas <46335023+ftrbnd@users.noreply.github.com>",
   "license": "MIT",
-  "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
