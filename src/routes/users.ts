@@ -1,9 +1,21 @@
 import { FastifyPluginAsyncZod } from '@benjaminlindberg/fastify-type-provider-zod';
-import { createUpcomingShow, deletePlaylist, getUserUpcomingShows, getUserPlaylists, createPlaylist, updateUpcomingShow, deleteUpcomingShow } from '../controllers/users.js';
+import { createUpcomingShow, deletePlaylist, getUserUpcomingShows, getUserPlaylists, createPlaylist, updateUpcomingShow, deleteUpcomingShow, deleteUser } from '../controllers/users.js';
 import { z } from 'zod';
 import { playlistInsertSchema, playlistSelectSchema, upcomingShowInsertSchema, upcomingShowSelectSchema, upcomingShowUpdateSchema } from '../db/schema.js';
 
 export const userRoutes: FastifyPluginAsyncZod = async function (server) {
+  server.delete(
+    '/:id',
+    {
+      schema: {
+        params: z.object({
+          id: z.string()
+        })
+      }
+    },
+    deleteUser
+  );
+
   server.post(
     '/:id/playlists',
     {
@@ -26,6 +38,7 @@ export const userRoutes: FastifyPluginAsyncZod = async function (server) {
     },
     createPlaylist
   );
+
   server.get(
     '/:id/playlists',
     {
@@ -72,6 +85,7 @@ export const userRoutes: FastifyPluginAsyncZod = async function (server) {
     },
     createUpcomingShow
   );
+
   server.get(
     '/:id/upcoming',
     {
@@ -85,6 +99,7 @@ export const userRoutes: FastifyPluginAsyncZod = async function (server) {
     },
     getUserUpcomingShows
   );
+
   server.patch(
     '/:id/upcoming/:upcomingId',
     {
@@ -105,6 +120,7 @@ export const userRoutes: FastifyPluginAsyncZod = async function (server) {
     },
     updateUpcomingShow
   );
+
   server.delete(
     '/:id/upcoming/:upcomingId',
     {

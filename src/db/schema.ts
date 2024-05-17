@@ -12,7 +12,7 @@ export const sessions = pgTable('sessions', {
   id: text('id').primaryKey(),
   userId: text('user_id')
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: 'cascade' }),
   expiresAt: timestamp('expires_at', {
     withTimezone: true,
     mode: 'date'
@@ -23,7 +23,7 @@ export const accounts = pgTable('accounts', {
   id: text('id').primaryKey(),
   userId: text('user_id')
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: 'cascade' }),
   provider: text('provider').notNull(),
   providerId: text('provider_id').notNull(),
   accessToken: text('access_token').notNull(),
@@ -38,7 +38,7 @@ export const playlists = pgTable('playlists', {
   id: text('id').primaryKey(),
   userId: text('user_id')
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: 'cascade' }),
   setlistId: text('setlist_id').notNull(),
   title: text('title').notNull()
 });
@@ -47,7 +47,7 @@ export const upcomingShows = pgTable('upcoming_shows', {
   id: text('id').primaryKey(),
   userId: text('user_id')
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: 'cascade' }),
   artist: text('artist').notNull(),
   tour: text('tour').notNull(),
   venue: text('venue').notNull(),

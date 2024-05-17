@@ -7,9 +7,22 @@ import {
   selectUserUpcomingShows,
   insertUpcomingShow,
   updateUserUpcomingShow,
-  deleteUpcomingShowFromUser
+  deleteUpcomingShowFromUser,
+  deleteUserFromDb
 } from '../services/users.js';
 import { NewPlaylist, NewUpcomingShow, UpdatedUpcomingShow } from '../db/schema.js';
+
+export const deleteUser = async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+  if (!request.session) {
+    return reply.status(401).send({ error: 'Invalid session' });
+  }
+
+  const { id } = request.params;
+
+  await deleteUserFromDb(id);
+
+  return reply.status(204).send();
+};
 
 export const createPlaylist = async (request: FastifyRequest<{ Params: { id: string }; Body: { playlist: NewPlaylist } }>, reply: FastifyReply) => {
   if (!request.session) {

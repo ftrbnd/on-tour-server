@@ -1,7 +1,11 @@
 import { eq, and } from 'drizzle-orm';
 import { db } from '../db/drizzle.js';
-import { NewPlaylist, NewUpcomingShow, UpdatedUpcomingShow, playlists, upcomingShows } from '../db/schema.js';
+import { NewPlaylist, NewUpcomingShow, UpdatedUpcomingShow, playlists, upcomingShows, users } from '../db/schema.js';
 import { generateId } from 'lucia';
+
+export const deleteUserFromDb = async (userId: string) => {
+  await db.delete(users).where(eq(users.id, userId));
+};
 
 export const insertPlaylist = async (playlist: NewPlaylist) => {
   const newPlaylists = await db.insert(playlists).values(playlist).returning();
