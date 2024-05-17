@@ -5,6 +5,7 @@ import { Account } from './db/schema.js';
 import { ZodTypeProvider, serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
 import { validateRequest } from './controllers/auth.js';
 import { userRoutes } from './routes/users.js';
+import { createReadStream } from 'fs';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -33,6 +34,10 @@ app.withTypeProvider<ZodTypeProvider>().register(userRoutes, {
 });
 app.get('/healthcheck', async () => {
   return { status: 'OK' };
+});
+app.get('/privacy', (_request, reply) => {
+  const stream = createReadStream('./src/pages/privacy-policy.html');
+  reply.type('text/html').send(stream);
 });
 
 export default app;
