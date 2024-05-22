@@ -6,6 +6,7 @@ import { ZodTypeProvider, serializerCompiler, validatorCompiler } from 'fastify-
 import { validateRequest } from './controllers/auth.js';
 import { userRoutes } from './routes/users.js';
 import { createReadStream } from 'fs';
+import favicon from 'fastify-favicon';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -32,6 +33,7 @@ app.withTypeProvider<ZodTypeProvider>().register(authRoutes, {
 app.withTypeProvider<ZodTypeProvider>().register(userRoutes, {
   prefix: '/api/users'
 });
+
 app.get('/healthcheck', async () => {
   return { status: 'OK' };
 });
@@ -39,5 +41,6 @@ app.get('/privacy', (_request, reply) => {
   const stream = createReadStream('./src/pages/privacy-policy.html');
   reply.type('text/html').send(stream);
 });
+app.register(favicon);
 
 export default app;
