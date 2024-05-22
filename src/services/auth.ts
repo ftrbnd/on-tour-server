@@ -26,7 +26,7 @@ export const createUserFromSpotify = async (user: SpotifyUser) => {
     .insert(users)
     .values({
       id: userId,
-      avatar: user.images[1].url,
+      avatar: user.images.length > 1 ? user.images[0].url : null,
       displayName: user.display_name
     })
     .returning();
