@@ -82,11 +82,11 @@ export const validateCallback = async (request: FastifyRequest<{ Querystring: IQ
     const session = await lucia.createSession(newUser.id, {});
 
     reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}`);
-  } catch (e) {
+  } catch (e: any) {
     if (e instanceof OAuth2RequestError) {
-      reply.status(400).send({ error: e });
+      reply.status(400).send({ error: e.message });
     }
-    reply.status(500).send({ error: e });
+    reply.status(500).send({ error: e.message });
   }
 };
 
@@ -97,8 +97,8 @@ export const getCurrentUser = async (request: FastifyRequest, reply: FastifyRepl
       user: request.user,
       account: request.account
     });
-  } catch (e) {
-    reply.status(500).send({ error: e });
+  } catch (e: any) {
+    reply.status(500).send({ error: e.message });
   }
 };
 
@@ -111,10 +111,10 @@ export const logout = async (request: FastifyRequest, reply: FastifyReply) => {
     await lucia.invalidateSession(request.session.id);
 
     reply.status(204);
-  } catch (e) {
+  } catch (e: any) {
     if (e instanceof OAuth2RequestError) {
-      reply.status(400).send({ error: e });
+      reply.status(400).send({ error: e.message });
     }
-    reply.status(500).send({ error: e });
+    reply.status(500).send({ error: e.message });
   }
 };

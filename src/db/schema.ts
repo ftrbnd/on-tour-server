@@ -57,6 +57,8 @@ export const upcomingShows = pgTable('upcoming_shows', {
   }).notNull()
 });
 
+export const selectUserSchema = createSelectSchema(users).partial();
+
 export const selectAccountSchema = createSelectSchema(accounts);
 export type Account = z.infer<typeof selectAccountSchema>;
 

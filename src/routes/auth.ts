@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { getCurrentUser, login, logout, validateCallback } from '../controllers/auth.js';
 import { FastifyPluginAsyncZod } from '@benjaminlindberg/fastify-type-provider-zod';
+import { selectUserSchema } from '../db/schema.js';
 
 // TODO: https://github.com/turkerdev/fastify-type-provider-zod/issues/75
 export const authRoutes: FastifyPluginAsyncZod = async function (server) {
@@ -29,11 +30,7 @@ export const authRoutes: FastifyPluginAsyncZod = async function (server) {
             session: z.object({
               id: z.string()
             }),
-            user: z.object({
-              displayName: z.string(),
-              avatar: z.string(),
-              id: z.string()
-            }),
+            user: selectUserSchema,
             account: z.object({
               accessToken: z.string(),
               providerId: z.string()
