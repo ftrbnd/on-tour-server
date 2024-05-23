@@ -84,7 +84,7 @@ export const validateCallback = async (request: FastifyRequest<{ Querystring: IQ
     reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}`);
   } catch (e: any) {
     if (e instanceof OAuth2RequestError) {
-      reply.status(400).send({ error: e.message });
+      return reply.status(400).send({ error: e.message });
     }
     reply.status(500).send({ error: e.message });
   }
@@ -113,7 +113,7 @@ export const logout = async (request: FastifyRequest, reply: FastifyReply) => {
     reply.status(204);
   } catch (e: any) {
     if (e instanceof OAuth2RequestError) {
-      reply.status(400).send({ error: e.message });
+      return reply.status(400).send({ error: e.message });
     }
     reply.status(500).send({ error: e.message });
   }
