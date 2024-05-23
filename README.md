@@ -63,7 +63,7 @@ Main responsibilities:
 * Delete expired sessions every 24 hours
 * Handle API requests from the On Tour app when users interact with Upcoming Shows or Created Playlists
 * Delete a user's data when requested
-* Serve the apps' privacy policy page
+* Serve the app's privacy policy page
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
