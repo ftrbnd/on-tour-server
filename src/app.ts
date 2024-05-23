@@ -34,7 +34,7 @@ app.withTypeProvider<ZodTypeProvider>().register(userRoutes, {
   prefix: '/api/users'
 });
 
-app.get('/healthcheck', async () => {
+app.get('/healthcheck', { logLevel: 'silent' }, async () => {
   return { status: 'OK' };
 });
 app.get('/privacy', (_request, reply) => {
