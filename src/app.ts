@@ -19,7 +19,13 @@ declare module 'fastify' {
 }
 
 const dirname = import.meta.dirname;
-const app = Fastify({ logger: true });
+const app = Fastify({
+  logger: {
+    transport: {
+      target: '@fastify/one-line-logger'
+    }
+  }
+});
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
