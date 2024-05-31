@@ -48,10 +48,10 @@ app.get('/healthcheck', { logLevel: 'silent' }, async () => {
 });
 
 app.register(FastifyStatic, {
-  root: path.join(dirname, 'pages')
+  root: path.join(dirname, '../pages')
 });
 app.register(FastifyFavicon, {
-  path: './src/pages',
+  path: './pages',
   name: 'favicon.ico'
 });
 
