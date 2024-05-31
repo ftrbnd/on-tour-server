@@ -1,5 +1,4 @@
 import Fastify from 'fastify';
-import FastifyFavicon from 'fastify-favicon';
 import { ZodTypeProvider, serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
 import FastifyStatic from '@fastify/static';
 import path from 'path';
@@ -50,11 +49,6 @@ app.get('/healthcheck', { logLevel: 'silent' }, async () => {
 app.register(FastifyStatic, {
   root: path.join(dirname, '../pages')
 });
-app.register(FastifyFavicon, {
-  path: './pages',
-  name: 'favicon.ico'
-});
-
 app.get('/', (_request, reply) => {
   reply.sendFile('index.html');
 });
