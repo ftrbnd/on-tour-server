@@ -7,20 +7,25 @@
   "author": "Giovanni Salas <46335023+ftrbnd@users.noreply.github.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && yarn tw:build && cpx \"pages/**/*.{html,css}\" dist",
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
     "db:generate": "drizzle-kit generate:pg",
     "db:migrate": "tsx ./src/db/migrate.ts",
-    "db:reset": "tsx ./src/db/reset.ts"
+    "db:reset": "tsx ./src/db/reset.ts",
+    "tw:dev": "npx tailwindcss -i ./pages/input.css -o ./pages/output.css --watch",
+    "tw:build": "npx tailwindcss -i ./pages/input.css -o ./pages/output.css"
   },
   "dependencies": {
     "@benjaminlindberg/fastify-type-provider-zod": "^1.1.9",
+    "@fastify/one-line-logger": "^1.3.0",
+    "@fastify/static": "^7.0.4",
     "@lucia-auth/adapter-drizzle": "^1.0.4",
     "@neondatabase/serverless": "^0.9.0",
     "@typescript-eslint/eslint-plugin": "^7.3.0",
     "@typescript-eslint/parser": "^7.3.0",
     "arctic": "^1.2.1",
+    "cpx2": "^7.0.1",
     "cron": "^3.1.6",
     "dotenv": "^16.4.5",
     "drizzle-orm": "0.30.3",
@@ -35,8 +40,10 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.28",
+    "daisyui": "^4.11.1",
     "drizzle-kit": "^0.20.14",
     "fastify-tsconfig": "^2.0.0",
+    "tailwindcss": "^3.4.3",
     "tsx": "^4.7.1",
     "typescript": "^5.4.2"
   },

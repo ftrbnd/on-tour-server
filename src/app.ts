@@ -1,12 +1,14 @@
 import Fastify from 'fastify';
-import { authRoutes } from './routes/auth.js';
-import { Session, User } from 'lucia';
-import { Account } from './db/schema.js';
+import FastifyFavicon from 'fastify-favicon';
 import { ZodTypeProvider, serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
+import FastifyStatic from '@fastify/static';
+import path from 'path';
+
 import { validateRequest } from './controllers/auth.js';
+import { Account } from './db/schema.js';
+import { Session, User } from 'lucia';
+import { authRoutes } from './routes/auth.js';
 import { userRoutes } from './routes/users.js';
-import { createReadStream } from 'fs';
-import favicon from 'fastify-favicon';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -16,7 +18,14 @@ declare module 'fastify' {
   }
 }
 
-const app = Fastify({ logger: true });
+const dirname = import.meta.dirname;
+const app = Fastify({
+  logger: {
+    transport: {
+      target: '@fastify/one-line-logger'
+    }
+  }
+});
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
@@ -37,10 +46,20 @@ app.withTypeProvider<ZodTypeProvider>().register(userRoutes, {
 app.get('/healthcheck', { logLevel: 'silent' }, async () => {
   return { status: 'OK' };
 });
-app.get('/privacy', (_request, reply) => {
-  const stream = createReadStream('./src/pages/privacy-policy.html');
-  reply.type('text/html').send(stream);
+
+app.register(FastifyStatic, {
+  root: path.join(dirname, '../pages')
 });
-app.register(favicon);
+app.register(FastifyFavicon, {
+  path: './pages',
+  name: 'favicon.ico'
+});
+
+app.get('/', (_request, reply) => {
+  reply.sendFile('index.html');
+});
+app.get('/privacy', (_request, reply) => {
+  reply.sendFile('privacy-policy.html');
+});
 
 export default app;
