@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { getCurrentUser, login, logout, validateCallback } from '../controllers/auth.js';
+import { getCurrentUser, getTokenWithClientCredentials, login, logout, validateCallback } from '../controllers/auth.js';
 import { FastifyPluginAsyncZod } from '@benjaminlindberg/fastify-type-provider-zod';
 import { selectUserSchema } from '../db/schema.js';
 
@@ -43,6 +43,21 @@ export const authRoutes: FastifyPluginAsyncZod = async function (server) {
       }
     },
     getCurrentUser
+  );
+  server.get(
+    '/client_credentials',
+    {
+      schema: {
+        response: {
+          200: z.object({
+            access_token: z.string(),
+            expires_in: z.number(),
+            token_type: z.string()
+          })
+        }
+      }
+    },
+    getTokenWithClientCredentials
   );
 
   server.post(
