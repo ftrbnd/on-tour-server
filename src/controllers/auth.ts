@@ -38,9 +38,12 @@ export const login = async (request: FastifyRequest, reply: FastifyReply) => {
   }
 
   const state = generateState();
+  console.log({ state });
+
   const url = await spotify.createAuthorizationURL(state, {
     scopes
   });
+  console.log({ url });
 
   reply
     .header(
@@ -60,8 +63,11 @@ export const validateCallback = async (request: FastifyRequest<{ Querystring: IQ
   const code = request.query.code?.toString() ?? null;
   const state = request.query.state?.toString() ?? null;
   const storedState = parseCookies(request.headers.cookie ?? '').get('spotify_oauth_state') ?? null;
+  console.log({ code, state, storedState });
 
   if (!code || !state || !storedState || state !== storedState) {
+    console.log('missing or expired code');
+
     return reply.status(400).send({ error: 'Missing or expired code' });
   }
 
@@ -69,10 +75,13 @@ export const validateCallback = async (request: FastifyRequest<{ Querystring: IQ
     const tokens = await spotify.validateAuthorizationCode(code);
     const spotifyUser = await getSpotifyUser(tokens.accessToken);
     const account = await findAccountByProviderId(spotifyUser.id);
+    console.log({ tokens, spotifyUser, account });
 
     if (account) {
       await updateAccountTokensByUserId(account.userId, tokens);
       const session = await lucia.createSession(account.userId, {});
+
+      console.log('existing account', { session });
 
       return reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}`);
     }
@@ -80,6 +89,8 @@ export const validateCallback = async (request: FastifyRequest<{ Querystring: IQ
     const newUser = await createUserFromSpotify(spotifyUser);
     await createAccount(newUser.id, spotifyUser.id, tokens);
     const session = await lucia.createSession(newUser.id, {});
+
+    console.log({ newUser, session });
 
     reply.redirect(`${env.EXPO_REDIRECT_URL}?session_token=${session.id}`);
   } catch (e: any) {

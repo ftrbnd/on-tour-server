@@ -20,9 +20,9 @@ declare module 'fastify' {
 const dirname = import.meta.dirname;
 const app = Fastify({
   logger: {
-    transport: {
-      target: '@fastify/one-line-logger'
-    }
+    // transport: {
+    //   target: '@fastify/one-line-logger'
+    // }
   }
 });
 
